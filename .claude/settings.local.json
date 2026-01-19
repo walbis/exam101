@@ -4,7 +4,11 @@
       "WebSearch",
       "Bash(git init:*)",
       "Bash(git remote add:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nBanka IT sınav hazırlık materyalleri eklendi\n\n- Network \\(CCNA\\) cheat sheet: OSI/TCP-IP, portlar, subnetting, VLAN, OSPF\n- Bilgi Güvenliği cheat sheet: CIA, OWASP Top 10, saldırı türleri, şifreleme\n- Temel SQL cheat sheet: SELECT, JOIN, NULL kontrolü, GROUP BY\n- Scripting/OS cheat sheet: Linux komutları, dosya izinleri, PowerShell\n- Her bölümde 15-20 flashcard\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
