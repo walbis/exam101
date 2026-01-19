@@ -371,23 +371,23 @@
             <div class="category-select">
                 <button class="category-btn network" onclick="selectCategory('network')">
                     Network (CCNA)
-                    <small>80 Soru - OSI, TCP/IP, Subnetting, VLAN</small>
+                    <small>43 Soru - OSI, TCP/IP, Subnetting, VLAN</small>
                 </button>
                 <button class="category-btn security" onclick="selectCategory('security')">
                     Bilgi Guvenligi
-                    <small>89 Soru - CIA, OWASP, Saldirilar, Sifreleme</small>
+                    <small>41 Soru - CIA, OWASP, Saldirilar, Sifreleme</small>
                 </button>
                 <button class="category-btn sql" onclick="selectCategory('sql')">
                     Temel SQL
-                    <small>74 Soru - SELECT, JOIN, NULL, GROUP BY</small>
+                    <small>26 Soru - SELECT, JOIN, NULL, GROUP BY</small>
                 </button>
                 <button class="category-btn scripting" onclick="selectCategory('scripting')">
                     Scripting/OS
-                    <small>117 Soru - Linux, chmod, PowerShell, Bash</small>
+                    <small>48 Soru - Linux, chmod, PowerShell, Bash</small>
                 </button>
                 <button class="category-btn all" onclick="selectCategory('all')">
                     Tum Konular (Karisik)
-                    <small>360 Soru - Gercek sinav simülasyonu</small>
+                    <small>158 Soru - Gercek sinav simülasyonu</small>
                 </button>
             </div>
         </div>
@@ -737,6 +737,26 @@
         let wrongAnswers = 0;
         let answered = false;
 
+        // HTML special karakterleri escape et
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Sayfa yuklendiginde array'leri kontrol et
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Questions object check:');
+            console.log('- Network:', questions.network ? questions.network.length : 'UNDEFINED');
+            console.log('- Security:', questions.security ? questions.security.length : 'UNDEFINED');
+            console.log('- SQL:', questions.sql ? questions.sql.length : 'UNDEFINED');
+            console.log('- Scripting:', questions.scripting ? questions.scripting.length : 'UNDEFINED');
+
+            const total = (questions.network?.length || 0) + (questions.security?.length || 0) +
+                         (questions.sql?.length || 0) + (questions.scripting?.length || 0);
+            console.log('- TOTAL:', total);
+        });
+
         function selectCategory(category) {
             currentCategory = category;
             document.getElementById('menu').style.display = 'none';
@@ -747,9 +767,19 @@
             let allQuestions = [];
 
             if (currentCategory === 'all') {
-                allQuestions = [...questions.network, ...questions.security, ...questions.sql, ...questions.scripting];
+                // Her arrayi ayri ayri ekle
+                const networkQ = questions.network || [];
+                const securityQ = questions.security || [];
+                const sqlQ = questions.sql || [];
+                const scriptingQ = questions.scripting || [];
+
+                console.log('Array lengths:', networkQ.length, securityQ.length, sqlQ.length, scriptingQ.length);
+
+                allQuestions = networkQ.concat(securityQ).concat(sqlQ).concat(scriptingQ);
+
+                console.log('Total questions:', allQuestions.length);
             } else {
-                allQuestions = [...questions[currentCategory]];
+                allQuestions = questions[currentCategory] ? [...questions[currentCategory]] : [];
             }
 
             // Karistir
@@ -798,25 +828,36 @@
             const allOptions = [q.a, ...q.wrong];
             const shuffledOptions = shuffleArray(allOptions);
 
-            const optionsHtml = shuffledOptions.map((opt, i) =>
-                `<div class="option" onclick="checkAnswer('${opt.replace(/'/g, "\\'")}', '${q.a.replace(/'/g, "\\'")}')">${opt}</div>`
-            ).join('');
+            // Dogru cevabi global olarak sakla
+            window.currentCorrectAnswer = q.a;
+
+            const optionsHtml = shuffledOptions.map((opt, i) => {
+                const escapedOpt = escapeHtml(opt);
+                return `<div class="option" data-value="${escapedOpt}" onclick="checkAnswer(this.dataset.value)">${escapedOpt}</div>`;
+            }).join('');
 
             document.getElementById('options').innerHTML = optionsHtml;
             document.getElementById('feedback').style.display = 'none';
             document.getElementById('nextBtn').style.display = 'none';
         }
 
-        function checkAnswer(selected, correct) {
+        function checkAnswer(selected) {
             if (answered) return;
             answered = true;
+
+            // HTML encoded halini decode et
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = selected;
+            const decodedSelected = tempDiv.textContent;
+
+            const correct = window.currentCorrectAnswer;
 
             const options = document.querySelectorAll('.option');
             options.forEach(opt => {
                 opt.classList.add('disabled');
                 if (opt.textContent === correct) {
                     opt.classList.add('correct');
-                } else if (opt.textContent === selected && selected !== correct) {
+                } else if (opt.textContent === decodedSelected && decodedSelected !== correct) {
                     opt.classList.add('wrong');
                 }
             });
@@ -826,7 +867,7 @@
             const feedbackText = document.getElementById('feedbackText');
             const explanation = document.getElementById('explanation');
 
-            if (selected === correct) {
+            if (decodedSelected === correct) {
                 correctAnswers++;
                 feedback.className = 'feedback correct';
                 feedbackIcon.textContent = '✓';
@@ -837,7 +878,7 @@
                 feedback.className = 'feedback wrong';
                 feedbackIcon.textContent = '✗';
                 feedbackText.textContent = 'Yanlis!';
-                explanation.innerHTML = `<strong>Dogru cevap:</strong> ${correct}<br><br>${currentQuestions[currentIndex].exp}`;
+                explanation.innerHTML = `<strong>Dogru cevap:</strong> ${escapeHtml(correct)}<br><br>${currentQuestions[currentIndex].exp}`;
             }
 
             feedback.style.display = 'block';
