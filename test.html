@@ -517,7 +517,7 @@
                 { topic: "STP", q: "Root Bridge nasil secilir?", a: "En dusuk Bridge ID'ye sahip switch", wrong: ["En yuksek Bridge ID", "En fazla porta sahip", "En hizli switch"], exp: "Root Bridge, en dusuk Bridge ID'ye (Priority + MAC) sahip switch olur." },
 
                 // OSPF
-                { topic: "OSPF", q: "OSPF'in metric'i nedir?", a: "Cost (bant genisligine dayali)", wrong: ["Hop count", "Delay", "Load"], exp: "OSPF Cost = 100 Mbps / Bandwidth. Dusuk cost tercih edilir." },
+                { topic: "OSPF", q: "OSPF'in metric'i nedir?", a: "Cost (bant genisligine dayali)", wrong: ["Hop count", "Delay", "Load"], exp: "OSPF Cost = Reference Bandwidth / Interface Bandwidth. Varsayilan reference 100 Mbps. Ornek: 10 Mbps link = 100/10 = Cost 10. Dusuk cost = daha iyi yol. RIP hop count kullanir, OSPF kullanmaz." },
                 { topic: "OSPF", q: "OSPF'te Area 0 nedir?", a: "Backbone area, tum arealar baglanmali", wrong: ["Stub area", "NSSA area", "Totally stub"], exp: "Area 0 (Backbone), OSPF'in merkezidir. Diger tum arealar Area 0'a baglanmalidir." },
                 { topic: "OSPF", q: "OSPF varsayilan Hello timer degeri nedir?", a: "10 saniye", wrong: ["5 saniye", "30 saniye", "60 saniye"], exp: "OSPF Hello: 10 saniye, Dead: 40 saniye (Hello x 4)." },
 
@@ -526,7 +526,7 @@
                 { topic: "Administrative Distance", q: "OSPF'in AD degeri kactir?", a: "110", wrong: ["90", "120", "100"], exp: "OSPF AD = 110. EIGRP = 90, RIP = 120." },
 
                 // TCP/UDP
-                { topic: "TCP vs UDP", q: "TCP'nin temel ozelligi nedir?", a: "Baglanti odakli, guvenilir", wrong: ["Baglantisiz, hizli", "Sifresiz", "Tek yonlu"], exp: "TCP connection-oriented ve reliable (guvenilir). 3-way handshake kullanir." },
+                { topic: "TCP vs UDP", q: "TCP'nin temel ozelligi nedir?", a: "Baglanti odakli, guvenilir", wrong: ["Baglantisiz, hizli", "Sifresiz", "Tek yonlu"], exp: "TCP: Connection-oriented (baglanti odakli), reliable (guvenilir), siralama ve hata kontrolu yapar. UDP: Connectionless (baglantisiz), hizli ama guvenilir degil. TCP = web, e-posta. UDP = DNS, video streaming, VoIP." },
                 { topic: "TCP vs UDP", q: "TCP 3-way handshake adimlari nedir?", a: "SYN - SYN-ACK - ACK", wrong: ["ACK - SYN - FIN", "SYN - ACK - FIN", "FIN - ACK - SYN"], exp: "TCP baglantisi: 1) Client SYN gonderir 2) Server SYN-ACK gonderir 3) Client ACK gonderir." },
 
                 // ARP/DHCP/NAT
@@ -557,9 +557,9 @@
                 { topic: "Network Saldirilari", q: "DoS ve DDoS arasindaki fark nedir?", a: "DoS tek kaynak, DDoS dagitik kaynak", wrong: ["DoS daha tehlikeli", "DDoS daha yavas", "Ayni sey"], exp: "DoS: Tek bilgisayardan saldiri. DDoS: Binlerce zombi bilgisayardan koordineli saldiri." },
 
                 // Web Saldirilari
-                { topic: "Web Saldirilari", q: "SQL Injection nedir?", a: "Veritabanina zararli SQL kodu enjekte etme", wrong: ["JavaScript enjekte", "Dosya yukleme", "Session calma"], exp: "SQL Injection: Kullanici girdisine SQL kodu ekleyerek DB'yi manipule etme. Ornek: ' OR '1'='1" },
-                { topic: "Web Saldirilari", q: "XSS'nin acilimi nedir?", a: "Cross-Site Scripting", wrong: ["Cross-Site Session", "XML Site Script", "Cross-Server Script"], exp: "XSS: Web sayfasina zararli JavaScript enjekte etme saldirisi." },
-                { topic: "Web Saldirilari", q: "CSRF ne yapar?", a: "Kullanici adina istenmeyen istek gonderir", wrong: ["Sifre calar", "Veritabani siler", "Session calar"], exp: "CSRF: Oturum acik kullaniciyi kandirarak istenmeyen islemler yaptirma." },
+                { topic: "Web Saldirilari", q: "SQL Injection nedir?", a: "Veritabanina zararli SQL kodu enjekte etme", wrong: ["JavaScript enjekte", "Dosya yukleme", "Session calma"], exp: "SQL Injection: Kullanici girdisine SQL kodu ekleyerek DB'yi manipule etme. Ornek: ' OR '1'='1 (her zaman TRUE yapar). Korunma: Prepared statements (parameterized queries), input validation. OWASP #3." },
+                { topic: "Web Saldirilari", q: "XSS'nin acilimi nedir?", a: "Cross-Site Scripting", wrong: ["Cross-Site Session", "XML Site Script", "Cross-Server Script"], exp: "XSS (Cross-Site Scripting): Web sayfasina zararli JavaScript enjekte etme. Kurbanin tarayicisinda calisir. 3 tur: Stored (kalici), Reflected (yansitilan), DOM-based. Cookie calmak, session hijack icin kullanilir." },
+                { topic: "Web Saldirilari", q: "CSRF ne yapar?", a: "Kullanici adina istenmeyen istek gonderir", wrong: ["Sifre calar", "Veritabani siler", "Session calar"], exp: "CSRF (Cross-Site Request Forgery): Oturum acik kullaniciyi kandirarak istenmeyen islemler yaptirma (para transferi, sifre degistirme vb.). Korunma: CSRF token, SameSite cookie, Referer header kontrolu." },
                 { topic: "Web Saldirilari", q: "Directory Traversal saldirisi ne yapar?", a: "../ kullanarak dosya sistemine erisir", wrong: ["SQL enjekte eder", "JavaScript calistirir", "Session calar"], exp: "Directory Traversal: ../../etc/passwd gibi yollarla yetkisiz dosyalara erisim." },
 
                 // Sosyal Muhendislik
@@ -572,16 +572,16 @@
                 // Sifreleme
                 { topic: "Simetrik Sifreleme", q: "Simetrik sifreleme kac anahtar kullanir?", a: "1 anahtar", wrong: ["2 anahtar", "3 anahtar", "Anahtar yok"], exp: "Simetrik: Ayni anahtar hem sifreleme hem desifreleme icin. AES, DES, 3DES ornekleri." },
                 { topic: "Simetrik Sifreleme", q: "AES hangi sifreleme turu?", a: "Simetrik", wrong: ["Asimetrik", "Hash", "Hibrit"], exp: "AES (Advanced Encryption Standard) simetrik sifreleme algoritmasidir." },
-                { topic: "Asimetrik Sifreleme", q: "Asimetrik sifreleme kac anahtar kullanir?", a: "2 anahtar (public/private)", wrong: ["1 anahtar", "3 anahtar", "Anahtar yok"], exp: "Asimetrik: Public key sifreler, Private key acsifreler. RSA, ECC ornekleri." },
+                { topic: "Asimetrik Sifreleme", q: "Asimetrik sifreleme kac anahtar kullanir?", a: "2 anahtar (public/private)", wrong: ["1 anahtar", "3 anahtar", "Anahtar yok"], exp: "Asimetrik 2 anahtar kullanir: Public (acik) ve Private (gizli). Sifreleme: Alicinin public key'i ile sifrele, private key'i ile ac. Imza: Gonderenin private key'i ile imzala, public key'i ile dogrula. RSA, ECC, DSA ornekleri." },
                 { topic: "Asimetrik Sifreleme", q: "RSA hangi sifreleme turu?", a: "Asimetrik", wrong: ["Simetrik", "Hash", "Hibrit"], exp: "RSA asimetrik sifreleme algoritmasidir. Dijital imza icin de kullanilir." },
 
                 // Hash
-                { topic: "Hash Fonksiyonlari", q: "Hash fonksiyonu tersine cevrilebilir mi?", a: "Hayir, tek yonludur", wrong: ["Evet", "Bazen", "Anahtarla evet"], exp: "Hash tek yonludur (one-way). Orjinal veriye donulemez." },
-                { topic: "Hash Fonksiyonlari", q: "MD5 guvenli mi?", a: "Hayir, collision zafiyeti var", wrong: ["Evet, cok guvenli", "Orta duzeyde", "En guvenli"], exp: "MD5 (128 bit) kirilmistir, kullanilmamali. SHA-256 veya SHA-512 tercih edilmeli." },
+                { topic: "Hash Fonksiyonlari", q: "Hash fonksiyonu tersine cevrilebilir mi?", a: "Hayir, tek yonludur", wrong: ["Evet", "Bazen", "Anahtarla evet"], exp: "Hash tek yonludur (one-way function). Orjinal veriye DONULEMEZ. Sifreleme DEGILDIR (sifreleme cozulebilir). Hash kullanim alanlari: Parola saklama, veri butunlugu dogrulama, dijital imza." },
+                { topic: "Hash Fonksiyonlari", q: "MD5 guvenli mi?", a: "Hayir, collision zafiyeti var", wrong: ["Evet, cok guvenli", "Orta duzeyde", "En guvenli"], exp: "MD5 (128 bit) GUVENLI DEGIL - collision (cakisma) saldirisi mumkun. Farkli iki girdi ayni hash'i uretebilir. Parola icin KULLANILMAMALI. Yerine: SHA-256, SHA-512 veya parola icin bcrypt/Argon2 kullan." },
                 { topic: "Hash Fonksiyonlari", q: "SHA-256'nin cikti uzunlugu kac bit?", a: "256 bit", wrong: ["128 bit", "512 bit", "1024 bit"], exp: "SHA-256 = 256 bit cikti. SHA-512 = 512 bit." },
 
                 // Dijital Imza
-                { topic: "Dijital Imza", q: "Dijital imza neyi saglar?", a: "Butunluk + Kimlik dogrulama + Inkar edilemezlik", wrong: ["Sadece sifreleme", "Sadece gizlilik", "Sadece hiz"], exp: "Dijital imza: Integrity, Authentication ve Non-repudiation saglar." },
+                { topic: "Dijital Imza", q: "Dijital imza neyi saglar?", a: "Butunluk + Kimlik dogrulama + Inkar edilemezlik", wrong: ["Sadece sifreleme", "Sadece gizlilik", "Sadece hiz"], exp: "Dijital imza 3 sey saglar: 1) Integrity (Butunluk): Veri degistirilmemis. 2) Authentication: Gonderenin kimligi dogrulandi. 3) Non-repudiation (Inkar edilemezlik): Gonderen inkar edemez. NOT: Gizlilik (confidentiality) SAGLAMAZ!" },
 
                 // Kimlik Dogrulama
                 { topic: "Kimlik Dogrulama", q: "'Something you know' ne demektir?", a: "Bildigin bir sey (Parola, PIN)", wrong: ["Sahip oldugun sey", "Oldugun sey", "Bulundugun yer"], exp: "Know = Parola, PIN. Have = Token, kart. Are = Parmak izi, retina." },
@@ -613,7 +613,7 @@
                 { topic: "SELECT", q: "Kolona takma isim vermek icin ne kullanilir?", a: "AS", wrong: ["ALIAS", "NAME", "LABEL"], exp: "SELECT ad AS isim, maas AS ucret FROM personel" },
 
                 // WHERE
-                { topic: "WHERE", q: "SQL'de 'esit degil' icin hangi operator kullanilir?", a: "<>", wrong: ["!=", "=/=", "NOT="], exp: "Standart SQL'de <> kullanilir. Bazi sistemlerde != de calisir." },
+                { topic: "WHERE", q: "SQL'de 'esit degil' icin hangi operator kullanilir?", a: "<>", wrong: ["==", "=/=", "NOT="], exp: "ANSI SQL standardinda <> kullanilir. != de cogu DBMS'de calisir ama standart olan <> tercih edilmeli. == ise SQL'de YOKTUR (programlama dillerinde kullanilir)." },
                 { topic: "WHERE", q: "BETWEEN 10 AND 20 ifadesi 10 ve 20'yi dahil eder mi?", a: "Evet, dahildir (inclusive)", wrong: ["Hayir, haric", "Sadece 10 dahil", "Sadece 20 dahil"], exp: "BETWEEN iki ucu da dahil eder (inclusive). BETWEEN 10 AND 20 = >= 10 AND <= 20" },
                 { topic: "WHERE", q: "IN operatoru ne ise yarar?", a: "Degerin listede olup olmadigini kontrol eder", wrong: ["Aralik kontrol", "NULL kontrol", "Desen eslestir"], exp: "WHERE sehir IN ('Istanbul', 'Ankara', 'Izmir')" },
 
@@ -622,13 +622,13 @@
                 { topic: "LIKE", q: "A ile baslayan isimleri bulmak icin LIKE nasil yazilir?", a: "LIKE 'A%'", wrong: ["LIKE '%A'", "LIKE '_A%'", "LIKE 'A_'"], exp: "'A%' = A ile baslar. '%A' = A ile biter. '%A%' = icinde A var." },
 
                 // NULL (KRITIK!)
-                { topic: "NULL Kontrolu", q: "NULL degerleri nasil kontrol edilir?", a: "IS NULL veya IS NOT NULL", wrong: ["= NULL", "== NULL", "<> NULL"], exp: "KRITIK: = NULL YANLIS! NULL bir deger degil, 'deger yok' anlaminda. IS NULL kullanilmali." },
+                { topic: "NULL Kontrolu", q: "NULL degerleri nasil kontrol edilir?", a: "IS NULL veya IS NOT NULL", wrong: ["= NULL", "== NULL", "<> NULL"], exp: "KRITIK KURAL: = NULL, == NULL, <> NULL HEPSI YANLIS! NULL bir deger DEGILDIR, 'bilinmiyor/yok' anlamindadir. NULL ile YAPILAN HER KARSILASTIRMA UNKNOWN doner (FALSE gibi davranir). DOGRU KULLANIM: WHERE kolon IS NULL veya WHERE kolon IS NOT NULL" },
                 { topic: "NULL Kontrolu", q: "WHERE kolon = NULL dogru mu?", a: "YANLIS! IS NULL kullanilmali", wrong: ["Dogru", "Bazen dogru", "DBMS'e bagli"], exp: "NULL ile yapilan TUM karsilastirmalar UNKNOWN doner. = NULL hic bir zaman TRUE donmez!" },
                 { topic: "NULL Kontrolu", q: "NULL = NULL sonucu nedir?", a: "UNKNOWN (FALSE gibi davranir)", wrong: ["TRUE", "FALSE", "NULL"], exp: "NULL = NULL --> UNKNOWN. Cunku 'bilinmeyen = bilinmeyen' sorusunun cevabi bilinemez." },
                 { topic: "NULL Kontrolu", q: "NULL degerini baska degerle degistirmek icin?", a: "COALESCE", wrong: ["REPLACE", "CONVERT", "CHANGE"], exp: "COALESCE(kolon, 'varsayilan') - NULL ise varsayilan deger doner. ISNULL (SQL Server), NVL (Oracle)." },
 
                 // JOIN (KRITIK!)
-                { topic: "INNER JOIN", q: "INNER JOIN ne doner?", a: "SADECE her iki tabloda eslesen kayitlar", wrong: ["Sol tablonun tamami", "Sag tablonun tamami", "Tum kayitlar"], exp: "INNER JOIN: Sadece ON kosulunu saglayan, her iki tabloda da var olan kayitlar." },
+                { topic: "INNER JOIN", q: "INNER JOIN ne doner?", a: "SADECE her iki tabloda eslesen kayitlar", wrong: ["Sol tablonun tamami", "Sag tablonun tamami", "Tum kayitlar"], exp: "INNER JOIN = KESISIM. Sadece ON kosulunu saglayan, HER IKI tabloda da var olan kayitlar doner. Eslesmeyenler SONUCA DAHIL EDILMEZ. En kısıtlayıcı JOIN türüdür." },
                 { topic: "LEFT JOIN", q: "LEFT JOIN ne doner?", a: "Sol tablonun TAMAMI + sagdan eslesenler", wrong: ["Sadece eslesenler", "Sag tablonun tamami", "Tum kayitlar"], exp: "LEFT JOIN: Sol tablodaki TUM satirlar + sag tablodan eslesenler (eslesmeyenler NULL)." },
                 { topic: "RIGHT JOIN", q: "RIGHT JOIN ne doner?", a: "Sag tablonun TAMAMI + soldan eslesenler", wrong: ["Sadece eslesenler", "Sol tablonun tamami", "Tum kayitlar"], exp: "RIGHT JOIN: Sag tablodaki TUM satirlar + sol tablodan eslesenler (eslesmeyenler NULL)." },
                 { topic: "FULL OUTER JOIN", q: "FULL OUTER JOIN ne doner?", a: "Her iki tablonun TAMAMI", wrong: ["Sadece eslesenler", "Sol tablonun tamami", "Sag tablonun tamami"], exp: "FULL OUTER JOIN: Her iki tablodan TUM satirlar (eslesmeyenler NULL ile doldurulur)." },
@@ -656,7 +656,7 @@
                 { topic: "Dosya Komutlari", q: "Dizin icerigini listeleyen Linux komutu?", a: "ls", wrong: ["dir", "list", "show"], exp: "ls = list. Windows'ta dir kullanilir." },
                 { topic: "Dosya Komutlari", q: "Mevcut dizini gosteren komut?", a: "pwd", wrong: ["cd", "dir", "path"], exp: "pwd = print working directory" },
                 { topic: "Dosya Komutlari", q: "Yeni dizin olusturmak icin?", a: "mkdir", wrong: ["newdir", "create", "md"], exp: "mkdir = make directory" },
-                { topic: "Dosya Komutlari", q: "rm -rf ne yapar?", a: "Recursive ve Force olarak siler", wrong: ["Sadece dosya siler", "Yeniden adlandirir", "Kopyalar"], exp: "-r = recursive (alt dizinler dahil), -f = force (onay sormadan). DIKKAT: Geri alinamaz!" },
+                { topic: "Dosya Komutlari", q: "rm -rf ne yapar?", a: "Recursive ve Force olarak siler", wrong: ["Sadece dosya siler", "Yeniden adlandirir", "Kopyalar"], exp: "-r = recursive (alt dizinler dahil tum icerik), -f = force (onay sormadan, hata vermeden). TEHLIKELI KOMUT! rm -rf / = TUM SISTEMI SILER! Geri alinamaz, cop kutusuna gitmez." },
                 { topic: "Dosya Komutlari", q: "Bos dosya olusturmak icin?", a: "touch", wrong: ["create", "new", "make"], exp: "touch dosya.txt - dosya yoksa olusturur, varsa zaman damgasini gunceller." },
 
                 // ls parametreleri
@@ -684,8 +684,8 @@
                 { topic: "Surec Yonetimi", q: "ps ve top arasindaki fark?", a: "ps anlik, top canli izleme", wrong: ["Ayni sey", "top daha az detay", "ps daha yavas"], exp: "ps: Anlık goruntu. top/htop: Canli, surekli guncellenen izleme." },
 
                 // Sinyaller
-                { topic: "Sinyaller", q: "SIGKILL (9) ne yapar?", a: "Zorla sonlandirir (engellenemez)", wrong: ["Normal sonlandirir", "Durdurur", "Devam ettirir"], exp: "SIGKILL surec tarafindan yakalanaMAZ. Her zaman sonlandirir." },
-                { topic: "Sinyaller", q: "SIGTERM (15) ne yapar?", a: "Normal sonlandirma istegi", wrong: ["Zorla sonlandirir", "Durdurur", "Yeniden yukler"], exp: "SIGTERM: Surec temizlik yapip kapanabilir. Varsayilan kill sinyali." },
+                { topic: "Sinyaller", q: "SIGKILL (9) ne yapar?", a: "Zorla sonlandirir (engellenemez)", wrong: ["Normal sonlandirir", "Durdurur", "Devam ettirir"], exp: "SIGKILL (9): Surec tarafindan YAKALANAMAZ. Kernel dogrudan sonlandirir. Temizlik yapma sansi VERMEZ. Son care olarak kullan!" },
+                { topic: "Sinyaller", q: "SIGTERM (15) ne yapar?", a: "Normal sonlandirma istegi", wrong: ["Zorla sonlandirir", "Durdurur", "Yeniden yukler"], exp: "SIGTERM (15): Varsayilan kill sinyali. Surec YAKALAYABILIR, temizlik yapip duzenli kapanabilir. Ilk once SIGTERM dene, cevap yoksa SIGKILL kullan." },
 
                 // grep
                 { topic: "grep", q: "grep ne ise yarar?", a: "Dosyalarda metin arar", wrong: ["Dosya siler", "Dosya kopyalar", "Dosya tasir"], exp: "grep = global regular expression print. grep 'hata' log.txt" },
