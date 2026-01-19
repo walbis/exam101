@@ -92,12 +92,35 @@
 
 ### Formül
 ```
-Toplam IP = 2^(32-CIDR)
-Kullanılabilir = Toplam - 2 (network + broadcast)
+Toplam IP     = 2^(32 - CIDR)
+Kullanılabilir = Toplam - 2
 
-Örnek: /26
-Toplam = 2^(32-26) = 2^6 = 64 IP
-Kullanılabilir = 64 - 2 = 62 IP
+Neden -2?
+┌─────────────────────────────────────────┐
+│ İlk IP  = Network adresi   (KULLANILAMAZ)│
+│ Son IP  = Broadcast adresi (KULLANILAMAZ)│
+└─────────────────────────────────────────┘
+
+Örnek: /26 için hesaplama
+─────────────────────────────
+Adım 1: 32 - 26 = 6
+Adım 2: 2^6 = 64 (toplam IP)
+Adım 3: 64 - 2 = 62 (kullanılabilir)
+
+Örnek: /23 için hesaplama
+─────────────────────────────
+Adım 1: 32 - 23 = 9
+Adım 2: 2^9 = 512 (toplam IP)
+Adım 3: 512 - 2 = 510 (kullanılabilir)
+```
+
+### 2'nin Kuvvetleri (Ezberle!)
+```
+2^1  = 2       2^6  = 64      2^11 = 2048
+2^2  = 4       2^7  = 128     2^12 = 4096
+2^3  = 8       2^8  = 256     2^13 = 8192
+2^4  = 16      2^9  = 512     2^14 = 16384
+2^5  = 32      2^10 = 1024    2^15 = 32768
 ```
 
 ### Hızlı Hesaplama (Son Oktet)
