@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banka IT Sinav Hazirlik Testi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .category-select {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .category-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .category-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .category-btn.network { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .category-btn.security { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .category-btn.sql { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .category-btn.scripting { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; }
+        .category-btn.all { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; grid-column: span 2; }
+
+        .category-btn small {
+            display: block;
+            margin-top: 5px;
+            opacity: 0.9;
+            font-weight: normal;
+        }
+
+        .quiz-container {
+            display: none;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00f260, #0575e6);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
+        .question-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .question-topic {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 18px 20px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .option:hover:not(.disabled) {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.4);
+            transform: translateX(5px);
+        }
+
+        .option.correct {
+            background: rgba(46, 204, 113, 0.3);
+            border-color: #2ecc71;
+        }
+
+        .option.wrong {
+            background: rgba(231, 76, 60, 0.3);
+            border-color: #e74c3c;
+        }
+
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid #2ecc71;
+        }
+
+        .feedback.wrong {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+        }
+
+        .feedback-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .feedback-text {
+            font-size: 1.1em;
+        }
+
+        .explanation {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .next-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .results {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+        }
+
+        .results h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(#2ecc71 var(--score), rgba(255,255,255,0.1) 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px auto;
+            position: relative;
+        }
+
+        .score-circle::before {
+            content: '';
+            width: 120px;
+            height: 120px;
+            background: #1a1a2e;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .score-text {
+            position: relative;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .result-stat {
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        .result-stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .result-stat-value.correct-color { color: #2ecc71; }
+        .result-stat-value.wrong-color { color: #e74c3c; }
+
+        .restart-btn {
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .question-count-select {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question-count-select h3 {
+            margin-bottom: 20px;
+        }
+
+        .count-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .count-btn {
+            padding: 15px 30px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .count-btn:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        @media (max-width: 600px) {
+            .category-select {
+                grid-template-columns: 1fr;
+            }
+            .category-btn.all {
+                grid-column: span 1;
+            }
+            .results-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Banka IT Sinav Testi</h1>
+
+        <div class="menu" id="menu">
+            <div class="category-select">
+                <button class="category-btn network" onclick="selectCategory('network')">
+                    Network (CCNA)
+                    <small>80 Soru - OSI, TCP/IP, Subnetting, VLAN</small>
+                </button>
+                <button class="category-btn security" onclick="selectCategory('security')">
+                    Bilgi Guvenligi
+                    <small>89 Soru - CIA, OWASP, Saldirilar, Sifreleme</small>
+                </button>
+                <button class="category-btn sql" onclick="selectCategory('sql')">
+                    Temel SQL
+                    <small>74 Soru - SELECT, JOIN, NULL, GROUP BY</small>
+                </button>
+                <button class="category-btn scripting" onclick="selectCategory('scripting')">
+                    Scripting/OS
+                    <small>117 Soru - Linux, chmod, PowerShell, Bash</small>
+                </button>
+                <button class="category-btn all" onclick="selectCategory('all')">
+                    Tum Konular (Karisik)
+                    <small>360 Soru - Gercek sinav simülasyonu</small>
+                </button>
+            </div>
+        </div>
+
+        <div class="question-count-select" id="countSelect">
+            <h3>Kac soru cozumek istiyorsun?</h3>
+            <div class="count-options">
+                <button class="count-btn" onclick="startQuiz(10)">10 Soru</button>
+                <button class="count-btn" onclick="startQuiz(20)">20 Soru</button>
+                <button class="count-btn" onclick="startQuiz(30)">30 Soru</button>
+                <button class="count-btn" onclick="startQuiz(50)">50 Soru</button>
+                <button class="count-btn" onclick="startQuiz(0)">Tumu</button>
+            </div>
+        </div>
+
+        <div class="quiz-container" id="quiz">
+            <button class="back-btn" onclick="backToMenu()">← Geri</button>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress"></div>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="currentQ">1</div>
+                    <div class="stat-label">Soru</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="totalQ">20</div>
+                    <div class="stat-label">Toplam</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="correctCount">0</div>
+                    <div class="stat-label">Dogru</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="wrongCount">0</div>
+                    <div class="stat-label">Yanlis</div>
+                </div>
+            </div>
+
+            <div class="question-card">
+                <div class="question-topic" id="topic"></div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="options"></div>
+                <div class="feedback" id="feedback">
+                    <span class="feedback-icon" id="feedbackIcon"></span>
+                    <span class="feedback-text" id="feedbackText"></span>
+                    <div class="explanation" id="explanation"></div>
+                </div>
+            </div>
+
+            <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Sonraki Soru →</button>
+        </div>
+
+        <div class="results" id="results">
+            <h2>Test Tamamlandi!</h2>
+            <div class="score-circle" id="scoreCircle">
+                <span class="score-text" id="scoreText">85%</span>
+            </div>
+            <div class="results-stats">
+                <div class="result-stat">
+                    <div class="result-stat-value correct-color" id="finalCorrect">17</div>
+                    <div class="stat-label">Dogru</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value wrong-color" id="finalWrong">3</div>
+                    <div class="stat-label">Yanlis</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="finalTotal">20</div>
+                    <div class="stat-label">Toplam</div>
+                </div>
+            </div>
+            <button class="restart-btn" onclick="backToMenu()">Tekrar Baslat</button>
+        </div>
+    </div>
+
+    <script>
+        // Soru havuzu
+        const questions = {
+            network: [
+                // OSI Model
+                { topic: "OSI Model", q: "OSI modelinde kac katman vardir?", a: "7 katman", wrong: ["4 katman", "5 katman", "6 katman"], exp: "OSI modeli 7 katmandan olusur: Physical, Data Link, Network, Transport, Session, Presentation, Application." },
+                { topic: "OSI Model", q: "OSI modelinde 7. katman hangisidir?", a: "Application", wrong: ["Physical", "Transport", "Network"], exp: "7. katman Application (Uygulama) katmanidir. HTTP, FTP, DNS gibi protokoller bu katmanda calisir." },
+                { topic: "OSI Model", q: "Router hangi OSI katmaninda calisir?", a: "Katman 3 (Network)", wrong: ["Katman 2", "Katman 4", "Katman 1"], exp: "Router, IP adreslerini kullanarak yonlendirme yapar ve Network katmaninda (Layer 3) calisir." },
+                { topic: "OSI Model", q: "Switch hangi OSI katmaninda calisir?", a: "Katman 2 (Data Link)", wrong: ["Katman 1", "Katman 3", "Katman 4"], exp: "Switch, MAC adreslerini kullanir ve Data Link katmaninda (Layer 2) calisir." },
+                { topic: "OSI Model", q: "Transport katmanindaki veri birimine ne denir?", a: "Segment", wrong: ["Packet", "Frame", "Bits"], exp: "Transport katmaninda veri birimi Segment'tir. Network=Packet, Data Link=Frame, Physical=Bits." },
+                { topic: "OSI Model", q: "MAC adresleri hangi katmanda calisir?", a: "Data Link (Katman 2)", wrong: ["Network (Katman 3)", "Physical (Katman 1)", "Transport (Katman 4)"], exp: "MAC adresleri Data Link katmaninda kullanilir. Switch'ler bu katmanda calisir." },
+
+                // TCP/IP
+                { topic: "TCP/IP", q: "TCP/IP modelinde kac katman vardir?", a: "4 katman", wrong: ["7 katman", "5 katman", "3 katman"], exp: "TCP/IP modeli 4 katmandan olusur: Application, Transport, Internet, Network Access." },
+                { topic: "TCP/IP", q: "TCP/IP'nin Internet katmani OSI'nin hangi katmanina karsilik gelir?", a: "Katman 3 (Network)", wrong: ["Katman 2", "Katman 4", "Katman 7"], exp: "TCP/IP Internet katmani = OSI Network katmani (Layer 3). IP protokolu burada calisir." },
+
+                // Portlar
+                { topic: "Port Numaralari", q: "HTTP hangi portu kullanir?", a: "80", wrong: ["443", "8080", "21"], exp: "HTTP port 80 kullanir. HTTPS ise port 443 kullanir." },
+                { topic: "Port Numaralari", q: "HTTPS hangi portu kullanir?", a: "443", wrong: ["80", "8443", "22"], exp: "HTTPS (guvenli HTTP) port 443 kullanir." },
+                { topic: "Port Numaralari", q: "SSH hangi portu kullanir?", a: "22", wrong: ["23", "21", "25"], exp: "SSH port 22 kullanir. Telnet (guvenSIZ) port 23 kullanir." },
+                { topic: "Port Numaralari", q: "FTP kontrol baglantisi hangi portu kullanir?", a: "21", wrong: ["20", "22", "23"], exp: "FTP: Port 21 kontrol, Port 20 veri transferi icin kullanilir." },
+                { topic: "Port Numaralari", q: "DNS hangi portu kullanir?", a: "53", wrong: ["80", "443", "25"], exp: "DNS port 53 kullanir (hem TCP hem UDP)." },
+                { topic: "Port Numaralari", q: "Telnet hangi portu kullanir?", a: "23", wrong: ["22", "21", "25"], exp: "Telnet port 23 kullanir. GUVENSIZ oldugu icin SSH (port 22) tercih edilmeli." },
+                { topic: "Port Numaralari", q: "SMTP (e-posta gonderme) hangi portu kullanir?", a: "25", wrong: ["110", "143", "587"], exp: "SMTP port 25 kullanir. POP3=110, IMAP=143." },
+                { topic: "Port Numaralari", q: "RDP (Remote Desktop) hangi portu kullanir?", a: "3389", wrong: ["22", "23", "5900"], exp: "Windows Remote Desktop Protocol port 3389 kullanir." },
+
+                // Subnetting
+                { topic: "Subnetting", q: "/24 subnet'te kac kullanilabilir IP vardir?", a: "254", wrong: ["256", "255", "252"], exp: "2^8 = 256 toplam IP. 256 - 2 = 254 kullanilabilir (network ve broadcast adresi cikarilir)." },
+                { topic: "Subnetting", q: "/26 subnet'te kac kullanilabilir IP vardir?", a: "62", wrong: ["64", "63", "60"], exp: "2^6 = 64 toplam IP. 64 - 2 = 62 kullanilabilir." },
+                { topic: "Subnetting", q: "/27 subnet'te kac kullanilabilir IP vardir?", a: "30", wrong: ["32", "31", "28"], exp: "2^5 = 32 toplam IP. 32 - 2 = 30 kullanilabilir." },
+                { topic: "Subnetting", q: "/30 subnet'te kac kullanilabilir IP vardir?", a: "2", wrong: ["4", "3", "1"], exp: "/30 point-to-point linkler icin idealdir. 2^2 = 4 toplam, 4 - 2 = 2 kullanilabilir." },
+                { topic: "Subnetting", q: "/24'un subnet mask'i nedir?", a: "255.255.255.0", wrong: ["255.255.0.0", "255.0.0.0", "255.255.255.128"], exp: "/24 = 24 bit network, 8 bit host. Son oktet 0 olur." },
+                { topic: "Subnetting", q: "Kullanilabilir IP hesaplamasinda neden 2 cikarilir?", a: "Network ve Broadcast adresi kullanilamaz", wrong: ["Gateway icin ayrilir", "DNS icin ayrilir", "Router icin ayrilir"], exp: "Her subnet'te ilk IP = Network adresi, son IP = Broadcast adresi. Bu ikisi host'lara atanamaz." },
+                { topic: "Subnetting", q: "2^8 kactir?", a: "256", wrong: ["128", "512", "1024"], exp: "2^8 = 256. Bu /24 subnet'teki toplam IP sayisidir." },
+
+                // IP Siniflari
+                { topic: "IP Siniflari", q: "192.168.x.x hangi IP sinifi?", a: "Class C (Private)", wrong: ["Class A", "Class B", "Class D"], exp: "192.168.0.0 - 192.168.255.255 Class C private IP araligidir." },
+                { topic: "IP Siniflari", q: "Class A'nin varsayilan subnet mask'i nedir?", a: "255.0.0.0 (/8)", wrong: ["255.255.0.0", "255.255.255.0", "255.255.255.128"], exp: "Class A: /8, Class B: /16, Class C: /24 varsayilan mask." },
+                { topic: "IP Siniflari", q: "10.0.0.0/8 hangi tur IP araligidir?", a: "Class A Private", wrong: ["Class A Public", "Class B Private", "Class C Private"], exp: "10.0.0.0 - 10.255.255.255 Class A private IP araligidir." },
+
+                // VLAN
+                { topic: "VLAN", q: "VLAN ne ise yarar?", a: "Broadcast domain'i mantiksal olarak ayirir", wrong: ["Collision domain ayirir", "IP adresi dagitir", "Routing yapar"], exp: "VLAN, fiziksel olarak ayni switch'teki cihazlari mantiksal olarak farkli networklere ayirir." },
+                { topic: "VLAN", q: "Trunk port ne ise yarar?", a: "Birden fazla VLAN trafigini tasir", wrong: ["Tek VLAN trafigi tasir", "IP adresi atar", "Routing yapar"], exp: "Trunk port switch-switch arasinda kullanilir ve birden fazla VLAN'in trafigini tasir." },
+                { topic: "VLAN", q: "Access port ne ise yarar?", a: "Tek bir VLAN'a bagli port", wrong: ["Birden fazla VLAN tasir", "Router baglantisi", "Internet baglantisi"], exp: "Access port son kullanici cihazlari icin kullanilir ve tek VLAN'a aittir." },
+                { topic: "VLAN", q: "VLAN'lar arasi iletisim icin ne gereklidir?", a: "Router veya Layer 3 Switch", wrong: ["Hub", "Repeater", "Access Point"], exp: "VLAN'lar farkli broadcast domain'ler oldugundan aralarinda iletisim icin Layer 3 cihaz gerekir." },
+
+                // STP
+                { topic: "STP", q: "STP'nin temel amaci nedir?", a: "Layer 2 loop'lari onlemek", wrong: ["Routing yapmak", "VLAN olusturmak", "IP dagitmak"], exp: "Spanning Tree Protocol (STP), switch networklerdeki dongusel baglantilari engelleyerek loop'lari onler." },
+                { topic: "STP", q: "Root Bridge nasil secilir?", a: "En dusuk Bridge ID'ye sahip switch", wrong: ["En yuksek Bridge ID", "En fazla porta sahip", "En hizli switch"], exp: "Root Bridge, en dusuk Bridge ID'ye (Priority + MAC) sahip switch olur." },
+
+                // OSPF
+                { topic: "OSPF", q: "OSPF'in metric'i nedir?", a: "Cost (bant genisligine dayali)", wrong: ["Hop count", "Delay", "Load"], exp: "OSPF Cost = 100 Mbps / Bandwidth. Dusuk cost tercih edilir." },
+                { topic: "OSPF", q: "OSPF'te Area 0 nedir?", a: "Backbone area, tum arealar baglanmali", wrong: ["Stub area", "NSSA area", "Totally stub"], exp: "Area 0 (Backbone), OSPF'in merkezidir. Diger tum arealar Area 0'a baglanmalidir." },
+                { topic: "OSPF", q: "OSPF varsayilan Hello timer degeri nedir?", a: "10 saniye", wrong: ["5 saniye", "30 saniye", "60 saniye"], exp: "OSPF Hello: 10 saniye, Dead: 40 saniye (Hello x 4)." },
+
+                // AD
+                { topic: "Administrative Distance", q: "Connected route'un AD degeri kactir?", a: "0", wrong: ["1", "5", "110"], exp: "Connected (direkt bagli) = 0, Static = 1, EIGRP = 90, OSPF = 110, RIP = 120." },
+                { topic: "Administrative Distance", q: "OSPF'in AD degeri kactir?", a: "110", wrong: ["90", "120", "100"], exp: "OSPF AD = 110. EIGRP = 90, RIP = 120." },
+
+                // TCP/UDP
+                { topic: "TCP vs UDP", q: "TCP'nin temel ozelligi nedir?", a: "Baglanti odakli, guvenilir", wrong: ["Baglantisiz, hizli", "Sifresiz", "Tek yonlu"], exp: "TCP connection-oriented ve reliable (guvenilir). 3-way handshake kullanir." },
+                { topic: "TCP vs UDP", q: "TCP 3-way handshake adimlari nedir?", a: "SYN - SYN-ACK - ACK", wrong: ["ACK - SYN - FIN", "SYN - ACK - FIN", "FIN - ACK - SYN"], exp: "TCP baglantisi: 1) Client SYN gonderir 2) Server SYN-ACK gonderir 3) Client ACK gonderir." },
+
+                // ARP/DHCP/NAT
+                { topic: "ARP/DHCP/NAT", q: "ARP ne ise yarar?", a: "IP adresini MAC adresine cevirir", wrong: ["MAC'i IP'ye cevirir", "DNS cozumler", "IP dagitir"], exp: "ARP (Address Resolution Protocol) IP adresini MAC adresine cevirir." },
+                { topic: "ARP/DHCP/NAT", q: "DHCP ne ise yarar?", a: "Otomatik IP adresi dagitir", wrong: ["DNS cozumler", "Routing yapar", "MAC adresi atar"], exp: "DHCP dinamik olarak IP, subnet mask, gateway ve DNS bilgilerini dagitir." },
+                { topic: "ARP/DHCP/NAT", q: "NAT ne ise yarar?", a: "Private IP'leri public IP'ye cevirir", wrong: ["DNS cozumler", "VLAN olusturur", "Routing yapar"], exp: "NAT (Network Address Translation) ic ag IP'lerini internet icin public IP'ye cevirir." },
+                { topic: "ARP/DHCP/NAT", q: "Default gateway nedir?", a: "Farkli aglara gitmek icin kullanilan router adresi", wrong: ["DNS sunucusu", "DHCP sunucusu", "Web sunucusu"], exp: "Default gateway, yerel ag disina cikmak icin kullanilan router'in IP adresidir." }
+            ],
+
+            security: [
+                // CIA
+                { topic: "CIA Uclusu", q: "CIA'da 'C' ne anlama gelir?", a: "Confidentiality (Gizlilik)", wrong: ["Control", "Compliance", "Continuity"], exp: "Confidentiality: Bilgiye sadece yetkili kisilerin erisebilmesi. Sifreleme ile korunur." },
+                { topic: "CIA Uclusu", q: "CIA'da 'I' ne anlama gelir?", a: "Integrity (Butunluk)", wrong: ["Intelligence", "Information", "Integration"], exp: "Integrity: Verinin izinsiz degistirilmemesi. Hash ve dijital imza ile korunur." },
+                { topic: "CIA Uclusu", q: "CIA'da 'A' ne anlama gelir?", a: "Availability (Erisilebilirlik)", wrong: ["Authentication", "Authorization", "Accountability"], exp: "Availability: Sistemin her zaman calisir durumda olmasi. Yedekleme ve HA ile korunur." },
+                { topic: "CIA Uclusu", q: "DDoS saldirisi CIA'nin hangi unsurunu hedefler?", a: "Availability", wrong: ["Confidentiality", "Integrity", "Hepsi"], exp: "DDoS sistemi cokertmeye calisir, bu da Availability'yi hedefler." },
+                { topic: "CIA Uclusu", q: "Veri sizintisi CIA'nin hangi unsurunu tehdit eder?", a: "Confidentiality", wrong: ["Integrity", "Availability", "Hepsi"], exp: "Veri sizintisi gizli bilgilerin ifsa olmasi demektir = Confidentiality ihlali." },
+                { topic: "CIA Uclusu", q: "Veri manipulasyonu CIA'nin hangi unsurunu tehdit eder?", a: "Integrity", wrong: ["Confidentiality", "Availability", "Hepsi"], exp: "Veri degistirilmesi Integrity (butunluk) ihlalidir." },
+
+                // OWASP
+                { topic: "OWASP Top 10", q: "OWASP Top 10 (2021) listesinde 1. sirada ne var?", a: "Broken Access Control", wrong: ["Injection", "XSS", "CSRF"], exp: "2021'de Broken Access Control (yetkisiz erisim) 1. siraya yukseldi." },
+                { topic: "OWASP Top 10", q: "SQL Injection hangi OWASP kategorisinde?", a: "Injection (#3)", wrong: ["Broken Access Control", "XSS", "CSRF"], exp: "Injection (SQL, Command, XSS dahil) OWASP 2021'de 3. sirada." },
+                { topic: "OWASP Top 10", q: "SSRF'nin acilimi nedir?", a: "Server-Side Request Forgery", wrong: ["Session Spoofing RF", "Secure Socket RF", "Server Security RF"], exp: "SSRF: Sunucuyu kandirarak ic kaynaklara istek yaptirma." },
+
+                // Network Saldirilari
+                { topic: "Network Saldirilari", q: "Man-in-the-Middle saldirisi ne yapar?", a: "Iletisime araya girerek veri calar", wrong: ["Sistemi cokertir", "Sifre kirar", "Virus bulaştirir"], exp: "MITM: Saldirgan iki taraf arasina girer, trafigi dinler veya degistirir." },
+                { topic: "Network Saldirilari", q: "Sniffing ne demektir?", a: "Ag trafigini dinleme", wrong: ["Sifre kirma", "Virus yayma", "DDoS saldirisi"], exp: "Sniffing: Ag uzerindeki paketleri yakalama ve inceleme." },
+                { topic: "Network Saldirilari", q: "ARP Spoofing ne yapar?", a: "ARP tablosunu zehirleyerek trafigi yonlendirir", wrong: ["DNS'i degistirir", "Firewall'i atlar", "Sifre kirar"], exp: "ARP Spoofing: Sahte ARP paketleri gondererek trafigi kendi uzerine yonlendirir." },
+                { topic: "Network Saldirilari", q: "DoS ve DDoS arasindaki fark nedir?", a: "DoS tek kaynak, DDoS dagitik kaynak", wrong: ["DoS daha tehlikeli", "DDoS daha yavas", "Ayni sey"], exp: "DoS: Tek bilgisayardan saldiri. DDoS: Binlerce zombi bilgisayardan koordineli saldiri." },
+
+                // Web Saldirilari
+                { topic: "Web Saldirilari", q: "SQL Injection nedir?", a: "Veritabanina zararli SQL kodu enjekte etme", wrong: ["JavaScript enjekte", "Dosya yukleme", "Session calma"], exp: "SQL Injection: Kullanici girdisine SQL kodu ekleyerek DB'yi manipule etme. Ornek: ' OR '1'='1" },
+                { topic: "Web Saldirilari", q: "XSS'nin acilimi nedir?", a: "Cross-Site Scripting", wrong: ["Cross-Site Session", "XML Site Script", "Cross-Server Script"], exp: "XSS: Web sayfasina zararli JavaScript enjekte etme saldirisi." },
+                { topic: "Web Saldirilari", q: "CSRF ne yapar?", a: "Kullanici adina istenmeyen istek gonderir", wrong: ["Sifre calar", "Veritabani siler", "Session calar"], exp: "CSRF: Oturum acik kullaniciyi kandirarak istenmeyen islemler yaptirma." },
+                { topic: "Web Saldirilari", q: "Directory Traversal saldirisi ne yapar?", a: "../ kullanarak dosya sistemine erisir", wrong: ["SQL enjekte eder", "JavaScript calistirir", "Session calar"], exp: "Directory Traversal: ../../etc/passwd gibi yollarla yetkisiz dosyalara erisim." },
+
+                // Sosyal Muhendislik
+                { topic: "Sosyal Muhendislik", q: "Phishing nedir?", a: "Sahte e-posta/site ile kimlik bilgisi calma", wrong: ["Telefon dolandiriciligi", "Fiziksel giris", "USB birakma"], exp: "Phishing: Banka, sosyal medya vb. taklit eden sahte sitelerle bilgi calma." },
+                { topic: "Sosyal Muhendislik", q: "Spear Phishing nedir?", a: "Belirli kisi/kuruma yonelik hedefli phishing", wrong: ["Genel phishing", "Telefon saldirisi", "SMS saldirisi"], exp: "Spear Phishing: Arastirma yapilarak hedefin ilgi alanina gore ozellestrilmis phishing." },
+                { topic: "Sosyal Muhendislik", q: "Whaling nedir?", a: "Ust duzey yoneticilere yonelik phishing", wrong: ["Genel phishing", "SMS saldirisi", "Fiziksel saldiri"], exp: "Whaling: CEO, CFO gibi ust duzey yoneticileri hedefleyen ozel phishing." },
+                { topic: "Sosyal Muhendislik", q: "Vishing nedir?", a: "Telefon ile dolandiricilik", wrong: ["Video saldirisi", "Virus yayma", "VPN saldirisi"], exp: "Vishing = Voice + Phishing. Telefonla arayip banka gibi davranma." },
+                { topic: "Sosyal Muhendislik", q: "Tailgating nedir?", a: "Yetkili birinin arkasindan fiziksel giris", wrong: ["E-posta saldirisi", "Ag saldirisi", "Web saldirisi"], exp: "Tailgating: Karti olan birinin arkasindan guvenli alana girme." },
+
+                // Sifreleme
+                { topic: "Simetrik Sifreleme", q: "Simetrik sifreleme kac anahtar kullanir?", a: "1 anahtar", wrong: ["2 anahtar", "3 anahtar", "Anahtar yok"], exp: "Simetrik: Ayni anahtar hem sifreleme hem desifreleme icin. AES, DES, 3DES ornekleri." },
+                { topic: "Simetrik Sifreleme", q: "AES hangi sifreleme turu?", a: "Simetrik", wrong: ["Asimetrik", "Hash", "Hibrit"], exp: "AES (Advanced Encryption Standard) simetrik sifreleme algoritmasidir." },
+                { topic: "Asimetrik Sifreleme", q: "Asimetrik sifreleme kac anahtar kullanir?", a: "2 anahtar (public/private)", wrong: ["1 anahtar", "3 anahtar", "Anahtar yok"], exp: "Asimetrik: Public key sifreler, Private key acsifreler. RSA, ECC ornekleri." },
+                { topic: "Asimetrik Sifreleme", q: "RSA hangi sifreleme turu?", a: "Asimetrik", wrong: ["Simetrik", "Hash", "Hibrit"], exp: "RSA asimetrik sifreleme algoritmasidir. Dijital imza icin de kullanilir." },
+
+                // Hash
+                { topic: "Hash Fonksiyonlari", q: "Hash fonksiyonu tersine cevrilebilir mi?", a: "Hayir, tek yonludur", wrong: ["Evet", "Bazen", "Anahtarla evet"], exp: "Hash tek yonludur (one-way). Orjinal veriye donulemez." },
+                { topic: "Hash Fonksiyonlari", q: "MD5 guvenli mi?", a: "Hayir, collision zafiyeti var", wrong: ["Evet, cok guvenli", "Orta duzeyde", "En guvenli"], exp: "MD5 (128 bit) kirilmistir, kullanilmamali. SHA-256 veya SHA-512 tercih edilmeli." },
+                { topic: "Hash Fonksiyonlari", q: "SHA-256'nin cikti uzunlugu kac bit?", a: "256 bit", wrong: ["128 bit", "512 bit", "1024 bit"], exp: "SHA-256 = 256 bit cikti. SHA-512 = 512 bit." },
+
+                // Dijital Imza
+                { topic: "Dijital Imza", q: "Dijital imza neyi saglar?", a: "Butunluk + Kimlik dogrulama + Inkar edilemezlik", wrong: ["Sadece sifreleme", "Sadece gizlilik", "Sadece hiz"], exp: "Dijital imza: Integrity, Authentication ve Non-repudiation saglar." },
+
+                // Kimlik Dogrulama
+                { topic: "Kimlik Dogrulama", q: "'Something you know' ne demektir?", a: "Bildigin bir sey (Parola, PIN)", wrong: ["Sahip oldugun sey", "Oldugun sey", "Bulundugun yer"], exp: "Know = Parola, PIN. Have = Token, kart. Are = Parmak izi, retina." },
+                { topic: "Kimlik Dogrulama", q: "'Something you are' ne demektir?", a: "Oldugun sey (Biyometrik)", wrong: ["Bildigin sey", "Sahip oldugun sey", "Bulundugun yer"], exp: "Biyometrik: Parmak izi, iris, yuz tanima, ses tanima." },
+                { topic: "Kimlik Dogrulama", q: "MFA ne demektir?", a: "Multi-Factor Authentication", wrong: ["Master File Access", "Main Firewall Auth", "Managed File Auth"], exp: "MFA: 2 veya daha fazla faktorle kimlik dogrulama (parola + SMS kodu gibi)." },
+
+                // AAA
+                { topic: "AAA", q: "AAA'nin acilimi nedir?", a: "Authentication, Authorization, Accounting", wrong: ["Access, Admin, Audit", "Auth, Access, Admin", "Account, Admin, Access"], exp: "Authentication: Kim? Authorization: Ne yapabilir? Accounting: Ne yapti?" },
+
+                // Erisim Kontrol
+                { topic: "Erisim Kontrol", q: "RBAC ne demektir?", a: "Role-Based Access Control", wrong: ["Rule-Based AC", "Resource-Based AC", "Remote-Based AC"], exp: "RBAC: Kullanicilara roller atanir, roller izinleri belirler. Kurumsal sistemlerde yaygin." },
+                { topic: "Erisim Kontrol", q: "DAC ne demektir?", a: "Discretionary Access Control", wrong: ["Dynamic AC", "Default AC", "Domain AC"], exp: "DAC: Kaynak sahibi izinleri belirler. Unix dosya izinleri ornegi." },
+
+                // Guvenlik Araclari
+                { topic: "Guvenlik Araclari", q: "Firewall ne ise yarar?", a: "Ag trafigini kurallara gore filtreler", wrong: ["Virus tarar", "Sifre saklar", "VPN kurar"], exp: "Firewall: Giris/cikis trafigini izin/engel kurallarına gore filtreler." },
+                { topic: "Guvenlik Araclari", q: "IDS ve IPS arasindaki fark nedir?", a: "IDS tespit eder, IPS tespit eder + engeller", wrong: ["Ayni sey", "IPS daha yavas", "IDS daha guvenli"], exp: "IDS: Intrusion Detection (sadece alarm). IPS: Intrusion Prevention (alarm + blok)." },
+                { topic: "Guvenlik Araclari", q: "WAF ne demektir?", a: "Web Application Firewall", wrong: ["Wide Area Firewall", "Wireless Auth FW", "Web Access Filter"], exp: "WAF: Web uygulamalarini SQL Injection, XSS gibi saldirilardan korur." },
+                { topic: "Guvenlik Araclari", q: "SIEM ne yapar?", a: "Log toplama ve guvenlik olay analizi", wrong: ["Sifreleme", "Virus tarama", "VPN kurma"], exp: "SIEM: Security Information and Event Management. Loglardan tehdit tespit eder." },
+                { topic: "Guvenlik Araclari", q: "VPN ne saglar?", a: "Sifreli tunel ile guvenli uzak erisim", wrong: ["Virus korumasi", "Spam filtreleme", "Yedekleme"], exp: "VPN: Interneti uzerinden sifrelenmis tunel olusturarak guvenli baglanti saglar." }
+            ],
+
+            sql: [
+                // Yurutme Sirasi
+                { topic: "Sorgu Sirasi", q: "SQL sorgusunda ilk calistirilan clause hangisidir?", a: "FROM", wrong: ["SELECT", "WHERE", "ORDER BY"], exp: "Yurutme sirasi: FROM -> JOIN -> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER BY" },
+                { topic: "Sorgu Sirasi", q: "WHERE ve GROUP BY'dan hangisi once calisir?", a: "WHERE", wrong: ["GROUP BY", "Ayni anda", "Duruma bagli"], exp: "WHERE satirlari filtreler (GROUP BY'dan ONCE), HAVING gruplari filtreler (GROUP BY'dan SONRA)." },
+
+                // SELECT
+                { topic: "SELECT", q: "Tekrarlayan degerleri elemek icin ne kullanilir?", a: "SELECT DISTINCT", wrong: ["SELECT UNIQUE", "SELECT SINGLE", "SELECT ONE"], exp: "DISTINCT tekrar eden satirlari kaldirir. UNIQUE kisitlama (constraint) icindir." },
+                { topic: "SELECT", q: "Kolona takma isim vermek icin ne kullanilir?", a: "AS", wrong: ["ALIAS", "NAME", "LABEL"], exp: "SELECT ad AS isim, maas AS ucret FROM personel" },
+
+                // WHERE
+                { topic: "WHERE", q: "SQL'de 'esit degil' icin hangi operator kullanilir?", a: "<>", wrong: ["!=", "=/=", "NOT="], exp: "Standart SQL'de <> kullanilir. Bazi sistemlerde != de calisir." },
+                { topic: "WHERE", q: "BETWEEN 10 AND 20 ifadesi 10 ve 20'yi dahil eder mi?", a: "Evet, dahildir (inclusive)", wrong: ["Hayir, haric", "Sadece 10 dahil", "Sadece 20 dahil"], exp: "BETWEEN iki ucu da dahil eder (inclusive). BETWEEN 10 AND 20 = >= 10 AND <= 20" },
+                { topic: "WHERE", q: "IN operatoru ne ise yarar?", a: "Degerin listede olup olmadigini kontrol eder", wrong: ["Aralik kontrol", "NULL kontrol", "Desen eslestir"], exp: "WHERE sehir IN ('Istanbul', 'Ankara', 'Izmir')" },
+
+                // LIKE
+                { topic: "LIKE", q: "LIKE'da % joker karakteri ne anlama gelir?", a: "Sifir veya daha fazla karakter", wrong: ["Tam bir karakter", "Sadece rakam", "Sadece harf"], exp: "% = 0+ karakter, _ = tam 1 karakter. 'A%' = A ile baslayan hersey." },
+                { topic: "LIKE", q: "A ile baslayan isimleri bulmak icin LIKE nasil yazilir?", a: "LIKE 'A%'", wrong: ["LIKE '%A'", "LIKE '_A%'", "LIKE 'A_'"], exp: "'A%' = A ile baslar. '%A' = A ile biter. '%A%' = icinde A var." },
+
+                // NULL (KRITIK!)
+                { topic: "NULL Kontrolu", q: "NULL degerleri nasil kontrol edilir?", a: "IS NULL veya IS NOT NULL", wrong: ["= NULL", "== NULL", "<> NULL"], exp: "KRITIK: = NULL YANLIS! NULL bir deger degil, 'deger yok' anlaminda. IS NULL kullanilmali." },
+                { topic: "NULL Kontrolu", q: "WHERE kolon = NULL dogru mu?", a: "YANLIS! IS NULL kullanilmali", wrong: ["Dogru", "Bazen dogru", "DBMS'e bagli"], exp: "NULL ile yapilan TUM karsilastirmalar UNKNOWN doner. = NULL hic bir zaman TRUE donmez!" },
+                { topic: "NULL Kontrolu", q: "NULL = NULL sonucu nedir?", a: "UNKNOWN (FALSE gibi davranir)", wrong: ["TRUE", "FALSE", "NULL"], exp: "NULL = NULL --> UNKNOWN. Cunku 'bilinmeyen = bilinmeyen' sorusunun cevabi bilinemez." },
+                { topic: "NULL Kontrolu", q: "NULL degerini baska degerle degistirmek icin?", a: "COALESCE", wrong: ["REPLACE", "CONVERT", "CHANGE"], exp: "COALESCE(kolon, 'varsayilan') - NULL ise varsayilan deger doner. ISNULL (SQL Server), NVL (Oracle)." },
+
+                // JOIN (KRITIK!)
+                { topic: "INNER JOIN", q: "INNER JOIN ne doner?", a: "SADECE her iki tabloda eslesen kayitlar", wrong: ["Sol tablonun tamami", "Sag tablonun tamami", "Tum kayitlar"], exp: "INNER JOIN: Sadece ON kosulunu saglayan, her iki tabloda da var olan kayitlar." },
+                { topic: "LEFT JOIN", q: "LEFT JOIN ne doner?", a: "Sol tablonun TAMAMI + sagdan eslesenler", wrong: ["Sadece eslesenler", "Sag tablonun tamami", "Tum kayitlar"], exp: "LEFT JOIN: Sol tablodaki TUM satirlar + sag tablodan eslesenler (eslesmeyenler NULL)." },
+                { topic: "RIGHT JOIN", q: "RIGHT JOIN ne doner?", a: "Sag tablonun TAMAMI + soldan eslesenler", wrong: ["Sadece eslesenler", "Sol tablonun tamami", "Tum kayitlar"], exp: "RIGHT JOIN: Sag tablodaki TUM satirlar + sol tablodan eslesenler (eslesmeyenler NULL)." },
+                { topic: "FULL OUTER JOIN", q: "FULL OUTER JOIN ne doner?", a: "Her iki tablonun TAMAMI", wrong: ["Sadece eslesenler", "Sol tablonun tamami", "Sag tablonun tamami"], exp: "FULL OUTER JOIN: Her iki tablodan TUM satirlar (eslesmeyenler NULL ile doldurulur)." },
+                { topic: "JOIN", q: "'Sadece eslesenleri getir' denirse hangi JOIN?", a: "INNER JOIN", wrong: ["LEFT JOIN", "RIGHT JOIN", "FULL JOIN"], exp: "INNER = sadece eslesenler. LEFT/RIGHT = bir tablonun tamami. FULL = her ikisinin tamami." },
+                { topic: "JOIN", q: "CROSS JOIN ne doner?", a: "Kartezyen carpim (her satir x her satir)", wrong: ["Sadece eslesenler", "NULL olanlar", "Tek tablo"], exp: "CROSS JOIN: A tablosu 3, B tablosu 4 satir ise sonuc 12 satir olur." },
+
+                // Aggregate
+                { topic: "Aggregate", q: "COUNT(*) ve COUNT(kolon) arasindaki fark?", a: "COUNT(*) tum satirlari, COUNT(kolon) NULL olmayanlari sayar", wrong: ["Ayni sey", "COUNT(*) daha hizli", "COUNT(kolon) daha dogru"], exp: "COUNT(*): Tum satirlar (NULL dahil). COUNT(kolon): NULL olmayanlar." },
+                { topic: "Aggregate", q: "Benzersiz deger sayisini bulmak icin?", a: "COUNT(DISTINCT kolon)", wrong: ["DISTINCT COUNT", "COUNT UNIQUE", "UNIQUE(kolon)"], exp: "SELECT COUNT(DISTINCT departman) FROM personel" },
+
+                // GROUP BY / HAVING
+                { topic: "GROUP BY", q: "GROUP BY ne ise yarar?", a: "Satirlari gruplara ayirir", wrong: ["Siralar", "Filtreler", "Birlestirir"], exp: "GROUP BY: Ayni degere sahip satirlari gruplar, aggregate fonksiyonlarla kullanilir." },
+                { topic: "HAVING", q: "GROUP BY sonrasi filtreleme icin ne kullanilir?", a: "HAVING", wrong: ["WHERE", "FILTER", "GROUP FILTER"], exp: "WHERE: GROUP BY'dan once satirlari filtreler. HAVING: GROUP BY'dan sonra GRUPLARI filtreler." },
+                { topic: "WHERE vs HAVING", q: "WHERE'de aggregate fonksiyon kullanilabilir mi?", a: "Hayir, HAVING kullanilmali", wrong: ["Evet", "Bazen", "DBMS'e bagli"], exp: "WHERE satirlari gorur (aggregate oncesi). HAVING gruplari gorur (aggregate sonrasi)." },
+
+                // ORDER BY
+                { topic: "ORDER BY", q: "ORDER BY varsayilan siralama yonu nedir?", a: "ASC (artan)", wrong: ["DESC (azalan)", "Rastgele", "Ekleme sirasi"], exp: "Belirtilmezse ASC (A-Z, 0-9). DESC acikca yazilmali." },
+
+                // DML
+                { topic: "DELETE vs TRUNCATE", q: "DELETE ve TRUNCATE arasindaki fark?", a: "DELETE log tutar ve WHERE kullanir, TRUNCATE hizli ve logsuz", wrong: ["Ayni sey", "TRUNCATE daha yavas", "DELETE daha hizli"], exp: "DELETE: WHERE ile secici silebilir, rollback yapilabilir. TRUNCATE: Tum tablo, cok hizli, rollback zor." }
+            ],
+
+            scripting: [
+                // Dosya komutlari
+                { topic: "Dosya Komutlari", q: "Dizin icerigini listeleyen Linux komutu?", a: "ls", wrong: ["dir", "list", "show"], exp: "ls = list. Windows'ta dir kullanilir." },
+                { topic: "Dosya Komutlari", q: "Mevcut dizini gosteren komut?", a: "pwd", wrong: ["cd", "dir", "path"], exp: "pwd = print working directory" },
+                { topic: "Dosya Komutlari", q: "Yeni dizin olusturmak icin?", a: "mkdir", wrong: ["newdir", "create", "md"], exp: "mkdir = make directory" },
+                { topic: "Dosya Komutlari", q: "rm -rf ne yapar?", a: "Recursive ve Force olarak siler", wrong: ["Sadece dosya siler", "Yeniden adlandirir", "Kopyalar"], exp: "-r = recursive (alt dizinler dahil), -f = force (onay sormadan). DIKKAT: Geri alinamaz!" },
+                { topic: "Dosya Komutlari", q: "Bos dosya olusturmak icin?", a: "touch", wrong: ["create", "new", "make"], exp: "touch dosya.txt - dosya yoksa olusturur, varsa zaman damgasini gunceller." },
+
+                // ls parametreleri
+                { topic: "ls Parametreleri", q: "ls -l ne yapar?", a: "Detayli liste (izinler, sahip, boyut)", wrong: ["Gizli dosyalar", "Boyuta gore sirala", "Recursive"], exp: "l = long format. Izinler, sahip, grup, boyut, tarih gosterir." },
+                { topic: "ls Parametreleri", q: "ls -a ne yapar?", a: "Gizli dosyalar dahil gosterir", wrong: ["Detayli liste", "Boyuta gore sirala", "Recursive"], exp: "a = all. . ile baslayan gizli dosyalari da gosterir." },
+                { topic: "ls Parametreleri", q: "ls -lh ne yapar?", a: "Boyutlari insan okunur formatta gosterir", wrong: ["Gizli dosyalar", "Sadece dizinler", "Recursive"], exp: "h = human readable. 4096 yerine 4K, 1048576 yerine 1M yazar." },
+
+                // Izin degerleri (KRITIK!)
+                { topic: "Dosya Izinleri", q: "'r' (read) izninin sayisal degeri?", a: "4", wrong: ["1", "2", "7"], exp: "r=4, w=2, x=1. Toplam: rwx=7, rw-=6, r-x=5, r--=4" },
+                { topic: "Dosya Izinleri", q: "'w' (write) izninin sayisal degeri?", a: "2", wrong: ["1", "4", "3"], exp: "r=4, w=2, x=1" },
+                { topic: "Dosya Izinleri", q: "'x' (execute) izninin sayisal degeri?", a: "1", wrong: ["2", "4", "0"], exp: "r=4, w=2, x=1" },
+                { topic: "Dosya Izinleri", q: "644 izni ne anlama gelir?", a: "rw-r--r-- (sahip okur+yazar, digerler okur)", wrong: ["rwxr-xr-x", "rw-rw-rw-", "rwx------"], exp: "6=rw- (4+2), 4=r-- (4+0+0), 4=r-- (4+0+0). Dosyalar icin tipik izin." },
+                { topic: "Dosya Izinleri", q: "755 izni ne anlama gelir?", a: "rwxr-xr-x (sahip full, digerler okur+calistirir)", wrong: ["rw-r--r--", "rwxrwxrwx", "rw-rw-rw-"], exp: "7=rwx (4+2+1), 5=r-x (4+0+1), 5=r-x. Script/program icin tipik izin." },
+                { topic: "Dosya Izinleri", q: "777 izni ne anlama gelir?", a: "rwxrwxrwx (herkes her seyi yapabilir - TEHLIKELI)", wrong: ["rw-rw-rw-", "rwxr-xr-x", "r--r--r--"], exp: "777 = Herkes okur+yazar+calistirir. GUVENLIK RISKI! Kullanilmamali." },
+                { topic: "Dosya Izinleri", q: "600 izni ne anlama gelir?", a: "rw------- (sadece sahip okur+yazar)", wrong: ["rwx------", "r--------", "rw-r--r--"], exp: "6=rw-, 0=---, 0=---. Gizli dosyalar (SSH key gibi) icin ideal." },
+
+                // chmod
+                { topic: "chmod", q: "chmod ne ise yarar?", a: "Dosya izinlerini degistirir", wrong: ["Sahip degistirir", "Grup degistirir", "Dosya siler"], exp: "chmod = change mode. chmod 755 script.sh veya chmod u+x script.sh" },
+                { topic: "chmod", q: "chmod u+x ne yapar?", a: "Sahibe calistirma izni ekler", wrong: ["Gruba yazma izni", "Herkese okuma izni", "Sahipten izin kaldirir"], exp: "u=user(owner), g=group, o=others, a=all. +=ekle, -=cikar, ==ayarla" },
+                { topic: "chmod", q: "chmod vs chown farki?", a: "chmod izin, chown sahiplik degistirir", wrong: ["Ayni sey", "chown izin degistirir", "chmod sahiplik degistirir"], exp: "chmod = izin (rwx). chown = owner (sahip). chgrp = group." },
+
+                // Surec
+                { topic: "Surec Yonetimi", q: "ps komutu ne yapar?", a: "Surecleri listeler", wrong: ["Dosya listeler", "Port listeler", "Kullanici listeler"], exp: "ps = process status. ps aux = tum surecleri detayli gosterir." },
+                { topic: "Surec Yonetimi", q: "kill -9 PID ne yapar?", a: "Sureci zorla sonlandirir (SIGKILL)", wrong: ["Normal sonlandirir", "Durdurur", "Yeniden baslatir"], exp: "kill = SIGTERM (normal istek). kill -9 = SIGKILL (zorla, engellenemez)." },
+                { topic: "Surec Yonetimi", q: "ps ve top arasindaki fark?", a: "ps anlik, top canli izleme", wrong: ["Ayni sey", "top daha az detay", "ps daha yavas"], exp: "ps: Anlık goruntu. top/htop: Canli, surekli guncellenen izleme." },
+
+                // Sinyaller
+                { topic: "Sinyaller", q: "SIGKILL (9) ne yapar?", a: "Zorla sonlandirir (engellenemez)", wrong: ["Normal sonlandirir", "Durdurur", "Devam ettirir"], exp: "SIGKILL surec tarafindan yakalanaMAZ. Her zaman sonlandirir." },
+                { topic: "Sinyaller", q: "SIGTERM (15) ne yapar?", a: "Normal sonlandirma istegi", wrong: ["Zorla sonlandirir", "Durdurur", "Yeniden yukler"], exp: "SIGTERM: Surec temizlik yapip kapanabilir. Varsayilan kill sinyali." },
+
+                // grep
+                { topic: "grep", q: "grep ne ise yarar?", a: "Dosyalarda metin arar", wrong: ["Dosya siler", "Dosya kopyalar", "Dosya tasir"], exp: "grep = global regular expression print. grep 'hata' log.txt" },
+                { topic: "grep", q: "grep -i ne yapar?", a: "Buyuk/kucuk harf duyarsiz arama", wrong: ["Sadece satirlari sayar", "Eslesmeyenleri gosterir", "Recursive arar"], exp: "-i = ignore case. 'ERROR', 'Error', 'error' hepsini bulur." },
+                { topic: "grep", q: "grep -r ne yapar?", a: "Alt dizinlerde de arar (recursive)", wrong: ["Tersine arar", "Sadece satirlari sayar", "Buyuk/kucuk harf duyarsiz"], exp: "-r = recursive. grep -r 'TODO' ./ = tum alt dizinlerde ara" },
+                { topic: "grep", q: "grep -v ne yapar?", a: "Eslesmeyenleri gosterir", wrong: ["Recursive arar", "Verbose cikti", "Sadece sayar"], exp: "-v = invert. Aramayla ESLESMEYEN satirlari gosterir." },
+
+                // Pipe ve Yonlendirme
+                { topic: "Pipe", q: "| (pipe) operatoru ne yapar?", a: "Ciktiyi baska komutun girdisi yapar", wrong: ["Dosyaya yazar", "Hata yonlendirir", "Arka plana gonderir"], exp: "cat dosya.txt | grep 'hata' | wc -l" },
+                { topic: "Yonlendirme", q: "> operatoru ne yapar?", a: "Ciktiyi dosyaya yazar (uzerine yazar)", wrong: ["Dosyaya ekler", "Hata yonlendirir", "Girdiden okur"], exp: "echo 'test' > dosya.txt - dosyayi sifirlar ve yazar" },
+                { topic: "Yonlendirme", q: ">> operatoru ne yapar?", a: "Ciktiyi dosyaya EKLER (append)", wrong: ["Uzerine yazar", "Hata yonlendirir", "Girdiden okur"], exp: "echo 'yeni satir' >> dosya.txt - mevcut icerigin sonuna ekler" },
+                { topic: "Yonlendirme", q: "2> ne yapar?", a: "Hata ciktisini (stderr) dosyaya yazar", wrong: ["Normal cikti yazar", "Dosyadan okur", "Arka plana gonderir"], exp: "command 2> hata.log - hatalar hata.log'a, normal cikti ekrana" },
+
+                // Ag komutlari
+                { topic: "Ag Komutlari", q: "ping ne ise yarar?", a: "Baglanti kontrolu yapar", wrong: ["DNS sorgular", "Port tarar", "Dosya indirir"], exp: "ping IP'ye ICMP paketi gonderir, yanit suresi ve packet loss gosterir." },
+                { topic: "Ag Komutlari", q: "traceroute ne yapar?", a: "Paketin izledigi yolu gosterir", wrong: ["Baglanti test eder", "DNS sorgular", "Port tarar"], exp: "Paket hedefe giderken hangi router'lardan gectigini gosterir." },
+                { topic: "Ag Komutlari", q: "ssh ne yapar?", a: "Guvenli shell baglantisi saglar", wrong: ["Dosya indirir", "DNS sorgular", "Ping atar"], exp: "SSH = Secure Shell. Sifreli uzak sunucu erisimi." },
+
+                // Disk/Bellek
+                { topic: "Disk/Bellek", q: "df -h ne gosterir?", a: "Disk kullanimini insan okunur formatta", wrong: ["Bellek kullanimi", "Surecleri", "Ag baglantilari"], exp: "df = disk free. -h = human readable (GB, MB olarak)." },
+                { topic: "Disk/Bellek", q: "free -h ne gosterir?", a: "Bellek (RAM) kullanimini", wrong: ["Disk kullanimi", "CPU kullanimi", "Surecleri"], exp: "free: Toplam, kullanilan, bos RAM ve swap gosterir." },
+
+                // Kullanici
+                { topic: "Kullanici", q: "whoami ne gosterir?", a: "Mevcut kullanici adini", wrong: ["Tum kullanicilari", "Grup bilgisini", "Sistem bilgisini"], exp: "whoami = who am i. Hangi kullanici olarak calistigini gosterir." },
+                { topic: "Kullanici", q: "sudo ne yapar?", a: "Komutu root yetkisiyle calistirir", wrong: ["Kullanici degistirir", "Parola degistirir", "Grup degistirir"], exp: "sudo = superuser do. Gecici olarak yonetici yetkisi verir." },
+
+                // Onemli dosyalar
+                { topic: "Sistem Dosyalari", q: "/etc/passwd ne icerir?", a: "Kullanici bilgileri", wrong: ["Sifreler", "Grup bilgileri", "Sudo yetkileri"], exp: "/etc/passwd: kullanici:x:UID:GID:aciklama:home:shell" },
+                { topic: "Sistem Dosyalari", q: "/etc/shadow ne icerir?", a: "Sifreli parolalar", wrong: ["Kullanici bilgileri", "Grup bilgileri", "Network ayarlari"], exp: "/etc/shadow sadece root okuyabilir. Hashlenmis sifreler burada." },
+
+                // PowerShell
+                { topic: "PowerShell", q: "Get-ChildItem'in Bash karsiligi?", a: "ls", wrong: ["cd", "pwd", "cat"], exp: "Get-ChildItem = ls/dir. PowerShell'de alias olarak ls de calisir." },
+                { topic: "PowerShell", q: "Get-Process'in Bash karsiligi?", a: "ps", wrong: ["top", "kill", "ls"], exp: "Get-Process = ps. Surecleri listeler." },
+                { topic: "PowerShell", q: "Select-String'in Bash karsiligi?", a: "grep", wrong: ["sed", "awk", "find"], exp: "Select-String dosyalarda metin arar, grep gibi." },
+                { topic: "PowerShell", q: "Get-Content'in Bash karsiligi?", a: "cat", wrong: ["ls", "cd", "grep"], exp: "Get-Content = cat. Dosya icerigini okur." },
+
+                // Bash Scripting
+                { topic: "Bash Scripting", q: "Bash script'in ilk satiri ne olmali?", a: "#!/bin/bash (shebang)", wrong: ["#bash", "//bin/bash", "@bash"], exp: "Shebang (#!) hangi yorumlayicinin kullanilacagini belirtir." },
+                { topic: "Bash Scripting", q: "Bash'te degisken nasil kullanilir?", a: "$degisken veya ${degisken}", wrong: ["%degisken%", "degisken", "@degisken"], exp: "isim='Ali'; echo $isim veya echo ${isim}" },
+                { topic: "Bash Scripting", q: "Bash'te -eq ne anlama gelir?", a: "Sayisal esitlik (equal)", wrong: ["Esit degil", "Buyuk", "Kucuk"], exp: "-eq = equal, -ne = not equal, -gt = greater than, -lt = less than" },
+                { topic: "Bash Scripting", q: "Bash'te -f ne kontrol eder?", a: "Dosya mi (file)?", wrong: ["Dizin mi", "Bos mu", "Var mi"], exp: "-f = file mi, -d = directory mi, -e = exists (var mi)" }
+            ]
+        };
+
+        let currentCategory = '';
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        let answered = false;
+
+        function selectCategory(category) {
+            currentCategory = category;
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('countSelect').style.display = 'block';
+        }
+
+        function startQuiz(count) {
+            let allQuestions = [];
+
+            if (currentCategory === 'all') {
+                allQuestions = [...questions.network, ...questions.security, ...questions.sql, ...questions.scripting];
+            } else {
+                allQuestions = [...questions[currentCategory]];
+            }
+
+            // Karistir
+            allQuestions = shuffleArray(allQuestions);
+
+            // Soru sayisini ayarla
+            if (count > 0 && count < allQuestions.length) {
+                currentQuestions = allQuestions.slice(0, count);
+            } else {
+                currentQuestions = allQuestions;
+            }
+
+            currentIndex = 0;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+
+            document.getElementById('countSelect').style.display = 'none';
+            document.getElementById('quiz').style.display = 'block';
+            document.getElementById('totalQ').textContent = currentQuestions.length;
+
+            showQuestion();
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function showQuestion() {
+            answered = false;
+            const q = currentQuestions[currentIndex];
+
+            document.getElementById('currentQ').textContent = currentIndex + 1;
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('wrongCount').textContent = wrongAnswers;
+            document.getElementById('progress').style.width = ((currentIndex + 1) / currentQuestions.length * 100) + '%';
+
+            document.getElementById('topic').textContent = q.topic;
+            document.getElementById('questionText').textContent = q.q;
+
+            // Secenekleri karistir
+            const allOptions = [q.a, ...q.wrong];
+            const shuffledOptions = shuffleArray(allOptions);
+
+            const optionsHtml = shuffledOptions.map((opt, i) =>
+                `<div class="option" onclick="checkAnswer('${opt.replace(/'/g, "\\'")}', '${q.a.replace(/'/g, "\\'")}')">${opt}</div>`
+            ).join('');
+
+            document.getElementById('options').innerHTML = optionsHtml;
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'none';
+        }
+
+        function checkAnswer(selected, correct) {
+            if (answered) return;
+            answered = true;
+
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => {
+                opt.classList.add('disabled');
+                if (opt.textContent === correct) {
+                    opt.classList.add('correct');
+                } else if (opt.textContent === selected && selected !== correct) {
+                    opt.classList.add('wrong');
+                }
+            });
+
+            const feedback = document.getElementById('feedback');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            const feedbackText = document.getElementById('feedbackText');
+            const explanation = document.getElementById('explanation');
+
+            if (selected === correct) {
+                correctAnswers++;
+                feedback.className = 'feedback correct';
+                feedbackIcon.textContent = '✓';
+                feedbackText.textContent = 'Dogru!';
+                explanation.textContent = currentQuestions[currentIndex].exp;
+            } else {
+                wrongAnswers++;
+                feedback.className = 'feedback wrong';
+                feedbackIcon.textContent = '✗';
+                feedbackText.textContent = 'Yanlis!';
+                explanation.innerHTML = `<strong>Dogru cevap:</strong> ${correct}<br><br>${currentQuestions[currentIndex].exp}`;
+            }
+
+            feedback.style.display = 'block';
+
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('wrongCount').textContent = wrongAnswers;
+
+            if (currentIndex < currentQuestions.length - 1) {
+                document.getElementById('nextBtn').textContent = 'Sonraki Soru →';
+            } else {
+                document.getElementById('nextBtn').textContent = 'Sonuclari Gor';
+            }
+            document.getElementById('nextBtn').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex < currentQuestions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+
+            const total = currentQuestions.length;
+            const percentage = Math.round((correctAnswers / total) * 100);
+
+            document.getElementById('scoreText').textContent = percentage + '%';
+            document.getElementById('scoreCircle').style.setProperty('--score', percentage + '%');
+            document.getElementById('finalCorrect').textContent = correctAnswers;
+            document.getElementById('finalWrong').textContent = wrongAnswers;
+            document.getElementById('finalTotal').textContent = total;
+        }
+
+        function backToMenu() {
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('countSelect').style.display = 'none';
+            document.getElementById('menu').style.display = 'block';
+            currentIndex = 0;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+        }
+    </script>
+</body>
+</html>
